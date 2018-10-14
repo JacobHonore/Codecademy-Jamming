@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
-import Playlist  from '../Playlist/Playlist';
+import Playlist from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify';
 
 class App extends Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class App extends Component {
     this.updatePlayListName = this.updatePlayListName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+    Spotify.getAccessToken();
   }
   addTrack(track) {
     if (this.state.playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -58,7 +60,12 @@ class App extends Component {
     });
   }
   search(term) {
-    console.log(term);
+    let so = this;
+    Spotify.search(term).then(function(results) {
+      so.setState({
+        searchResults: results
+      });
+    });
   }
   render() {
     return (
