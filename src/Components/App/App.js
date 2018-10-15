@@ -9,20 +9,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchResults: [{
-        id: 0,
-        name: '',
-        artist: '',
-        album: ''
-      }],
+      searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: [{
-        id: 0,
-        name: '',
-        artist: '',
-        album: '',
-        uri: ''
-      }]
+      playlistTracks: []
     }
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -59,6 +48,11 @@ class App extends Component {
     this.state.playlistTracks.forEach(function(track) {
       trackURIs.push(track.uri);
     });
+    Spotify.savePlaylist(this.state.playlistName, trackURIs);
+    this.setState({
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    })
   }
   search(term) {
     let so = this;

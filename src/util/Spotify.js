@@ -20,7 +20,7 @@ const Spotify = {
       }
       else {
         console.log("try to replace");
-        window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+        window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-private&redirect_uri=${redirectUri}`;
       }
     }
   },
@@ -44,6 +44,45 @@ const Spotify = {
       });
       return tracks;
     });
+  },
+  async savePlaylist(name, trackUris) {
+    if (name && trackUris) {
+      let userId = "";
+      let playlistId = "";
+      const headers = {
+        Authorization: `Bearer ${accessToken}`
+      };
+      await fetch('https://api.spotify.com/v1/me', {
+        headers: headers
+      }).then(function(response) {
+        return response.json();
+      }).then(function(jsonResponse) {
+        userId = jsonResponse.id;
+      });
+      let body = {
+        name: name,
+        public: false
+      }
+      await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+        headers: headers,
+        method: 'POST',
+        body: JSON.stringify(body)
+      }).then(function(response) {
+        return response.json();
+      }).then(function(jsonResponse) {
+        playlistId = jsonResponse.id;
+      });
+      await fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, {
+        headers: headers,
+        method: 'POST',
+        body: JSON.stringify(trackUris)
+      }).then(function(response) {
+        return response.json();
+      }).then(function(jsonResponse) {
+        playlistId = jsonResponse.id;
+      });
+    }
+    return;
   }
 }
 export default Spotify;
